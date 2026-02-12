@@ -34,8 +34,8 @@ public ResponseEntity<?> createSkill(@RequestBody Skill skill, @PathVariable Str
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }catch (Exception e){
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-    }
+    return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+}
 }
     @GetMapping("/id/{userId}")
     public ResponseEntity<?>  getAllSkills(@PathVariable ObjectId userId){
