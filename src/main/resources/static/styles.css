@@ -149,3 +149,18 @@ button:hover {
   border: 1px solid var(--border);
   background: #0b1220;
 }
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skill-delete {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  background: var(--danger);
+  color: #0f172a;
+}
