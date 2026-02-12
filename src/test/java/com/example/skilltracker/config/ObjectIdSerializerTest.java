@@ -28,4 +28,23 @@ class ObjectIdSerializerTest {
         
         assertEquals("\"507f1f77bcf86cd799439011\"", json);
     }
+
+    @Test
+    void testObjectIdInObjectWithNullValue() throws Exception {
+        // Test that null ObjectId in an object is handled correctly
+        TestObject obj = new TestObject(null);
+        
+        String json = objectMapper.writeValueAsString(obj);
+        
+        assertTrue(json.contains("\"id\":null"));
+    }
+
+    // Helper class for testing
+    static class TestObject {
+        public ObjectId id;
+        
+        TestObject(ObjectId id) {
+            this.id = id;
+        }
+    }
 }
