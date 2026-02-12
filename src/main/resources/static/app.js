@@ -87,6 +87,62 @@ const request = async (path, options = {}) => {
   return data ?? response.status;
 };
 
+const toHex = (value, length) => value.toString(16).padStart(length, "0");
+
+const buildObjectIdHex = (value) => {
+  const timestamp = Number.isInteger(value.timestamp) ? value.timestamp : null;
+  const machineIdentifier = Number.isInteger(value.machineIdentifier)
+    ? value.machineIdentifier
+    : Number.isInteger(value.machine)
+      ? value.machine
+      : Number.isInteger(value.machineId)
+        ? value.machineId
+        : null;
+  const processIdentifier = Number.isInteger(value.processIdentifier)
+    ? value.processIdentifier
+    : Number.isInteger(value.process)
+      ? value.process
+      : Number.isInteger(value.processId)
+        ? value.processId
+        : null;
+  const counter = Number.isInteger(value.counter)
+    ? value.counter
+    : Number.isInteger(value.increment)
+      ? value.increment
+      : Number.isInteger(value.inc)
+        ? value.inc
+        : null;
+
+  if (timestamp === null || machineIdentifier === null || processIdentifier === null || counter === null) {
+    return "";
+  }
+
+  return (
+    toHex(timestamp & 0xffffffff, 8) +
+    toHex(machineIdentifier & 0xffffff, 6) +
+    toHex(processIdentifier & 0xffff, 4) +
+    toHex(counter & 0xffffff, 6)
+  );
+};
+
+const normalizeSkillId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    if (typeof value.$oid === "string") return value.$oid;
+    if (typeof value.oid === "string") return value.oid;
+    if (typeof value.id === "string") return value.id;
+    if (typeof value.hexString === "string") return value.hexString;
+    if (typeof value.hex === "string") return value.hex;
+    if (typeof value.value === "string") return value.value;
+    if (typeof value.toHexString === "function") return value.toHexString();
+
+    const derived = buildObjectIdHex(value);
+    if (derived) return derived;
+  }
+  return "";
+};
+
 const renderSkills = (skills) => {
   els.skillsList.innerHTML = "";
   if (!skills || skills.length === 0) {
@@ -94,7 +150,8 @@ const renderSkills = (skills) => {
     return;
   }
   skills.forEach((skill) => {
-    const skillId = typeof skill.id === "string" ? skill.id : JSON.stringify(skill.id ?? "");
+    const skillId = normalizeSkillId(skill.id ?? skill._id ?? skill.objectId);
+    const hasId = Boolean(skillId);
     const item = document.createElement("div");
     item.className = "skill-item";
     item.innerHTML = `
@@ -102,9 +159,12 @@ const renderSkills = (skills) => {
         <div>
           <strong>${skill.name ?? "(no name)"}</strong><br/>
           <span class="muted">${skill.proficiency ?? ""}</span><br/>
-          <span class="muted">${skill.id ?? ""}</span>
+          <span class="muted">${hasId ? skillId : "ObjectId unavailable"}</span>
         </div>
-        <button class="skill-delete" type="button" data-skill-id="${skillId}">Delete</button>
+        <div class="actions">
+          <button class="skill-update" type="button" data-skill-action="update" data-skill-id="${skillId}" data-skill-name="${skill.name ?? ""}" data-skill-proficiency="${skill.proficiency ?? ""}" ${hasId ? "" : "disabled"}>Update</button>
+          <button class="skill-delete" type="button" data-skill-action="delete" data-skill-id="${skillId}" ${hasId ? "" : "disabled"}>Delete</button>
+        </div>
       </div>
     `;
     els.skillsList.appendChild(item);
@@ -112,19 +172,30 @@ const renderSkills = (skills) => {
 };
 
 els.skillsList.addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-skill-id]");
+  const button = event.target.closest("button[data-skill-action]");
   if (!button) return;
+  const action = button.getAttribute("data-skill-action");
   const skillId = button.getAttribute("data-skill-id") ?? "";
   const userId = els.skillUserId.value.trim();
   if (!userId || !skillId) return;
-  try {
-    const result = await request(`/skill-tracker/skill/userId/${userId}/skillId/${skillId}`, {
-      method: "DELETE",
-    });
-    setOutput("Delete Skill", result ?? "Deleted");
-    fetchSkills();
-  } catch (error) {
-    setOutput("Delete Skill Error", error.message);
+  if (action === "update") {
+    els.skillUserId2.value = userId;
+    els.skillId.value = skillId;
+    els.skillName.value = button.getAttribute("data-skill-name") ?? "";
+    els.skillProficiency.value = button.getAttribute("data-skill-proficiency") ?? "";
+    setOutput("Select Skill", "Ready to update. Edit fields and click Update Skill.");
+    return;
+  }
+  if (action === "delete") {
+    try {
+      const result = await request(`/skill-tracker/skill/userId/${userId}/skillId/${skillId}`, {
+        method: "DELETE",
+      });
+      setOutput("Delete Skill", result ?? "Deleted");
+      fetchSkills();
+    } catch (error) {
+      setOutput("Delete Skill Error", error.message);
+    }
   }
 });
 
