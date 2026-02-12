@@ -23,23 +23,15 @@ public class SkillController {
     @Autowired
     protected SkillService skillService;
 
-@PostMapping("/id/{id}")
-public ResponseEntity<?> createSkill(@RequestBody Skill skill, @PathVariable String id){
-
-    System.out.println("===== DEBUG CREATE SKILL =====");
-    System.out.println("UserId = " + id);
-    System.out.println("Skill name = " + skill.getName());
-    System.out.println("Skill proficiency = " + skill.getProficiency());
-
-    try{
-        skillService.saveSkill(new ObjectId(id), skill);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-
-    }catch (Exception e){
-        e.printStackTrace();
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @PostMapping("/id/{id}")
+    public ResponseEntity<?> createSkill(@RequestBody Skill skill, @PathVariable ObjectId id){
+        try{
+            skillService.saveSkill(id,skill);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
-}
     @GetMapping("/id/{userId}")
     public ResponseEntity<?>  getAllSkills(@PathVariable ObjectId userId){
         try{
