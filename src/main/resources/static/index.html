@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SkillTracker Client</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div>
+          <h1>SkillTracker Client</h1>
+          <p class="muted">Real-time frontend for Spring Boot API</p>
+        </div>
+        <div class="status" id="apiStatus">API: unknown</div>
+      </header>
+
+      <section class="card">
+        <h2>Connection</h2>
+        <div class="grid">
+          <label>
+            Base URL
+            <input id="baseUrl" type="text" value="" placeholder="http://localhost:8080" />
+          </label>
+          <label>
+            Username
+            <input id="username" type="text" placeholder="user" />
+          </label>
+          <label>
+            Password
+            <input id="password" type="password" placeholder="password" />
+          </label>
+          <div class="actions">
+            <button id="btnPing">Ping Login</button>
+            <button id="btnClear">Clear Results</button>
+          </div>
+        </div>
+        <p class="muted">Uses HTTP Basic Auth for all protected endpoints.</p>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <h2>Register</h2>
+          <label>
+            New Username
+            <input id="regUsername" type="text" placeholder="new_user" />
+          </label>
+          <label>
+            New Password
+            <input id="regPassword" type="password" placeholder="new_password" />
+          </label>
+          <button id="btnRegister">Register</button>
+          <p class="muted">Endpoint: POST /skill-tracker/register</p>
+        </div>
+
+        <div class="card">
+          <h2>User</h2>
+          <label>
+            User ID
+            <input id="userId" type="text" placeholder="ObjectId" />
+          </label>
+          <div class="actions">
+            <button id="btnGetUser">Get User</button>
+            <button id="btnUpdateUser">Update User</button>
+            <button id="btnDeleteUser">Delete User</button>
+          </div>
+          <div class="grid">
+            <label>
+              Update Username
+              <input id="updateUsername" type="text" placeholder="optional" />
+            </label>
+            <label>
+              Update Password
+              <input id="updatePassword" type="password" placeholder="optional" />
+            </label>
+          </div>
+          <p class="muted">Endpoint: GET/PUT/DELETE /skill-tracker/user/id/{id}</p>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <h2>Skills</h2>
+          <label>
+            User ID for Skills
+            <input id="skillUserId" type="text" placeholder="ObjectId" />
+          </label>
+          <div class="actions">
+            <button id="btnGetSkills">Fetch Skills</button>
+            <label class="inline">
+              <input id="autoRefresh" type="checkbox" /> Auto-refresh
+            </label>
+          </div>
+          <p class="muted">Endpoint: GET /skill-tracker/skill/id/{userId}</p>
+          <div class="skills" id="skillsList"></div>
+        </div>
+
+        <div class="card">
+          <h2>Add / Update / Delete Skill</h2>
+          <label>
+            Skill User ID
+            <input id="skillUserId2" type="text" placeholder="ObjectId" />
+          </label>
+          <label>
+            Skill ID (for update/delete)
+            <input id="skillId" type="text" placeholder="ObjectId" />
+          </label>
+          <label>
+            Skill Name
+            <input id="skillName" type="text" placeholder="Java" />
+          </label>
+          <label>
+            Proficiency
+            <input id="skillProficiency" type="text" placeholder="Beginner/Intermediate/Expert" />
+          </label>
+          <div class="actions">
+            <button id="btnAddSkill">Add Skill</button>
+            <button id="btnUpdateSkill">Update Skill</button>
+            <button id="btnDeleteSkill">Delete Skill</button>
+          </div>
+          <p class="muted">Endpoints: POST /skill-tracker/skill/id/{id}, PUT/DELETE /skill-tracker/skill/userId/{userId}/skillId/{skillId}</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Responses</h2>
+        <pre id="output" class="output"></pre>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
