@@ -72,8 +72,11 @@ const request = async (path, options = {}) => {
       ...(options.headers || {}),
     };
 
-    const auth = authHeader();
-    if (auth) headers.Authorization = auth;
+    // Attach auth unless explicitly skipped
+    if (!options.skipAuth) {
+      const auth = authHeader();
+      if (auth) headers.Authorization = auth;
+    }
 
     const response = await fetch(`${baseUrl()}${path}`, {
       ...options,
@@ -181,7 +184,8 @@ els.skillsList.addEventListener("click", async (event) => {
     els.skillUserId2.value = userId;
     els.skillId.value = skillId;
     els.skillName.value = button.dataset.skillName || "";
-    els.skillProficiency.value = button.dataset.skillProficiency || "";
+    els.skillProficiency.value =
+      button.dataset.skillProficiency || "";
 
     return setOutput("Select Skill", "Ready to update");
   }
@@ -205,7 +209,9 @@ els.skillsList.addEventListener("click", async (event) => {
 
 attach("btnPing", async () => {
   try {
-    const result = await request("/skill-tracker/login");
+    const result = await request("/skill-tracker/login", {
+      skipAuth: false, // login needs auth (Basic login)
+    });
 
     setStatus(true, "API authenticated");
     setOutput("Login", result);
@@ -221,12 +227,13 @@ attach("btnPing", async () => {
   }
 });
 
-/* ---------------- User APIs ---------------- */
+/* ---------------- Register ---------------- */
 
 attach("btnRegister", async () => {
   try {
     await request("/skill-tracker/register", {
       method: "POST",
+      skipAuth: true, // IMPORTANT FIX
       body: JSON.stringify({
         username: els.regUsername.value.trim(),
         password: els.regPassword.value,
@@ -238,6 +245,8 @@ attach("btnRegister", async () => {
     setOutput("Register Error", e.message);
   }
 });
+
+/* ---------------- User APIs ---------------- */
 
 attach("btnGetUser", async () => {
   const id = els.userId.value.trim();
@@ -275,7 +284,10 @@ attach("btnDeleteUser", async () => {
   if (!id) return;
 
   try {
-    await request(`/skill-tracker/user/id/${id}`, { method: "DELETE" });
+    await request(`/skill-tracker/user/id/${id}`, {
+      method: "DELETE",
+    });
+
     setOutput("Delete User", "Deleted");
   } catch (e) {
     setOutput("Delete User Error", e.message);
