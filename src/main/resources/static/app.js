@@ -89,29 +89,45 @@ const request = async (path, options = {}) => {
 
 const toHex = (value, length) => value.toString(16).padStart(length, "0");
 
+const parseInteger = (value) => {
+  if (Number.isInteger(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  return null;
+};
+
+const parseTimestamp = (value) => {
+  const direct = parseInteger(value);
+  if (direct !== null) return direct;
+  if (typeof value === "string" || value instanceof Date) {
+    const dateValue = new Date(value);
+    if (!Number.isNaN(dateValue.getTime())) {
+      return Math.floor(dateValue.getTime() / 1000);
+    }
+  }
+  return null;
+};
+
 const buildObjectIdHex = (value) => {
-  const timestamp = Number.isInteger(value.timestamp) ? value.timestamp : null;
-  const machineIdentifier = Number.isInteger(value.machineIdentifier)
-    ? value.machineIdentifier
-    : Number.isInteger(value.machine)
-      ? value.machine
-      : Number.isInteger(value.machineId)
-        ? value.machineId
-        : null;
-  const processIdentifier = Number.isInteger(value.processIdentifier)
-    ? value.processIdentifier
-    : Number.isInteger(value.process)
-      ? value.process
-      : Number.isInteger(value.processId)
-        ? value.processId
-        : null;
-  const counter = Number.isInteger(value.counter)
-    ? value.counter
-    : Number.isInteger(value.increment)
-      ? value.increment
-      : Number.isInteger(value.inc)
-        ? value.inc
-        : null;
+  const timestamp =
+    parseTimestamp(value.timestamp) ??
+    parseTimestamp(value.timeSecond) ??
+    parseTimestamp(value.time) ??
+    parseTimestamp(value.date);
+  const machineIdentifier =
+    parseInteger(value.machineIdentifier) ??
+    parseInteger(value.machine) ??
+    parseInteger(value.machineId);
+  const processIdentifier =
+    parseInteger(value.processIdentifier) ??
+    parseInteger(value.process) ??
+    parseInteger(value.processId);
+  const counter =
+    parseInteger(value.counter) ??
+    parseInteger(value.increment) ??
+    parseInteger(value.inc);
 
   if (timestamp === null || machineIdentifier === null || processIdentifier === null || counter === null) {
     return "";
@@ -177,7 +193,17 @@ els.skillsList.addEventListener("click", async (event) => {
   const action = button.getAttribute("data-skill-action");
   const skillId = button.getAttribute("data-skill-id") ?? "";
   const userId = els.skillUserId.value.trim();
-  if (!userId || !skillId) return;
+  if (!userId) {
+    setOutput("Skill Action", "User ID required. Paste it in 'User ID for Skills'.");
+    return;
+  }
+  if (!skillId) {
+    setOutput(
+      "Skill Action",
+      "Skill ID is unavailable in the API response. Update/Delete needs full ObjectId fields."
+    );
+    return;
+  }
   if (action === "update") {
     els.skillUserId2.value = userId;
     els.skillId.value = skillId;
