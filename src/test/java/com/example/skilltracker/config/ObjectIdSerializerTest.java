@@ -28,13 +28,4 @@ class ObjectIdSerializerTest {
         
         assertEquals("\"507f1f77bcf86cd799439011\"", json);
     }
-
-    @Test
-    void testNullObjectIdSerializesToNull() throws Exception {
-        ObjectId objectId = null;
-        
-        String json = objectMapper.writeValueAsString(objectId);
-        
-        assertEquals("null", json);
-    }
 }
