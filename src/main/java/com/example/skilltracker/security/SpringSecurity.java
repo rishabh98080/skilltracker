@@ -33,7 +33,8 @@ public class SpringSecurity {
                 .authorizeHttpRequests(x -> x
                         // 2. Handle the Preflight handshake before any role checks
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/skill-tracker/**").permitAll()
+                        .requestMatchers("/skill-tracker/login").permitAll()
+                        .requestMatchers("/skill-tracker/register").permitAll()
                         .requestMatchers("/skill-tracker/skill/**").hasRole("USER")
                         .requestMatchers("/skill-tracker/user/**").hasRole("USER")
                         .anyRequest().authenticated()
