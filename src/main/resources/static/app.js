@@ -39,7 +39,7 @@ const setStatus = (ok, message) => {
 };
 
 const baseUrl = () => {
-  const value = els.baseUrl.value.trim() || "https://skilltracker-production.up.railway.app";
+  const value = els.baseUrl.value.trim() || "httpss://skilltracker-production.up.railway.app";
   return value.replace(/\/$/, "");
 };
 
