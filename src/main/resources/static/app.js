@@ -39,7 +39,7 @@ const setStatus = (ok, message) => {
 };
 
 const baseUrl = () => {
-  const value = els.baseUrl.value.trim() || "http://localhost:8080";
+  const value = els.baseUrl.value.trim() || "http://skilltracker-production.up.railway.app";
   return value.replace(/\/$/, "");
 };
 
