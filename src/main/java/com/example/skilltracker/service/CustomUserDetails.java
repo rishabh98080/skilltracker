@@ -1,7 +1,6 @@
 package com.example.skilltracker.service;
 
 import com.example.skilltracker.model.User;
-import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     // CUSTOM METHOD: Now you can access the ID anywhere!
-    public ObjectId getUserId() {
+    public String getUserId() {
         return user.getId();
     }
 
