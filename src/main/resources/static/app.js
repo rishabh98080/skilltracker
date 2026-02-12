@@ -39,7 +39,7 @@ const setStatus = (ok, message) => {
 };
 
 const baseUrl = () => {
-  const value = els.baseUrl.value.trim() || "https://skilltracker-production.up.railway.app";
+  const value = els.baseUrl.value.trim() || "http://skilltracker-production.up.railway.app";
   return value.replace(/\/$/, "");
 };
 
@@ -94,12 +94,39 @@ const renderSkills = (skills) => {
     return;
   }
   skills.forEach((skill) => {
+    const skillId = typeof skill.id === "string" ? skill.id : JSON.stringify(skill.id ?? "");
     const item = document.createElement("div");
     item.className = "skill-item";
-    item.innerHTML = `<strong>${skill.name ?? "(no name)"}</strong><br/><span class="muted">${skill.proficiency ?? ""}</span><br/><span class="muted">${skill.id ?? ""}</span>`;
+    item.innerHTML = `
+      <div class="skill-row">
+        <div>
+          <strong>${skill.name ?? "(no name)"}</strong><br/>
+          <span class="muted">${skill.proficiency ?? ""}</span><br/>
+          <span class="muted">${skill.id ?? ""}</span>
+        </div>
+        <button class="skill-delete" type="button" data-skill-id="${skillId}">Delete</button>
+      </div>
+    `;
     els.skillsList.appendChild(item);
   });
 };
+
+els.skillsList.addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-skill-id]");
+  if (!button) return;
+  const skillId = button.getAttribute("data-skill-id") ?? "";
+  const userId = els.skillUserId.value.trim();
+  if (!userId || !skillId) return;
+  try {
+    const result = await request(`/skill-tracker/skill/userId/${userId}/skillId/${skillId}`, {
+      method: "DELETE",
+    });
+    setOutput("Delete Skill", result ?? "Deleted");
+    fetchSkills();
+  } catch (error) {
+    setOutput("Delete Skill Error", error.message);
+  }
+});
 
 const attach = (id, handler) => {
   document.getElementById(id).addEventListener("click", handler);
