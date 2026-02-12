@@ -45,7 +45,7 @@ public class SpringSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:3000")); // Match your frontend exactly
+        configuration.setAllowedOrigins(Arrays.asList("https://rishabh98080.github.io/skilltracker/src/main/resources/static/","https://skilltracker-3okm1v643-rishabh-kumars-projects-5e0474e5.vercel.app/")); // Match your frontend exactly
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);
