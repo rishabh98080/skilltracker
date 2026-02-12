@@ -25,17 +25,20 @@ public class SkillController {
 
 @PostMapping("/id/{id}")
 public ResponseEntity<?> createSkill(@RequestBody Skill skill, @PathVariable String id){
-    try{
-        if(!ObjectId.isValid(id)){
-            return new ResponseEntity<>("Invalid User ID", HttpStatus.BAD_REQUEST);
-        }
 
+    System.out.println("===== DEBUG CREATE SKILL =====");
+    System.out.println("UserId = " + id);
+    System.out.println("Skill name = " + skill.getName());
+    System.out.println("Skill proficiency = " + skill.getProficiency());
+
+    try{
         skillService.saveSkill(new ObjectId(id), skill);
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }catch (Exception e){
-    return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-}
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
     @GetMapping("/id/{userId}")
     public ResponseEntity<?>  getAllSkills(@PathVariable ObjectId userId){
