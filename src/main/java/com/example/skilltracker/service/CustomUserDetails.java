@@ -4,7 +4,7 @@ import com.example.skilltracker.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.bson.types.ObjectId;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     // CUSTOM METHOD: Now you can access the ID anywhere!
-    public String getUserId() {
+    public ObjectId getUserId() {
         return user.getId();
     }
 
