@@ -88,9 +88,9 @@ button {
 }
 
 button:hover {
-  background : lightgreen;
+  background : green;
   cursor : pointer;
-  color : white;
+  color : black;
   filter: brightness(0.95);
 }
 
